@@ -2,6 +2,7 @@ import Clutter from 'gi://Clutter';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
@@ -115,19 +116,34 @@ function computeGMT(now = new Date(), opts = {}) {
   };
 }
 
+function formatTimeInLocale(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function getTimeAtFraction(prevMidpoint, nextMidpoint, fraction) {
+  const durationMs = nextMidpoint.getTime() - prevMidpoint.getTime();
+  const offsetMs = durationMs * fraction;
+  return new Date(prevMidpoint.getTime() + offsetMs);
+}
+
 export default class GnuttMetricTimeExtension extends Extension {
   enable() {
     this._loadSunCalc();
-    this._indicator = new PanelMenu.Button(0.0, 'GnuttMetricTime');
+    this._indicator = new PanelMenu.Button(0.5, 'GnuttMetricTime');
     
-    // Create label following GNOME extension pattern
+    // Create label for the top bar
     try {
       this._label = new St.Label({
         text: 'GMT',
         y_align: Clutter.ActorAlign.CENTER,
         style_class: 'gnutt-metric-time-label'
       });
-      // Configure clutter_text for proper rendering
       this._label.clutter_text.set({
         x_align: Clutter.ActorAlign.CENTER,
       });
@@ -136,12 +152,98 @@ export default class GnuttMetricTimeExtension extends Extension {
       console.log("Label creation failed:", e.message);
     }
     
+    // Store GMT data for popup
+    this._gmtData = null;
+    
+    // Setup menu items
+    this._setupMenu();
+    
     Main.panel.addToStatusArea('gnutt-metric-time', this._indicator, 1, 'right');
     this._updateLabel();
     this._timeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
       this._updateLabel();
       return GLib.SOURCE_CONTINUE;
     });
+  }
+
+  _setupMenu() {
+    // Create a box to hold all the time info
+    this._menuBox = new St.BoxLayout({
+      vertical: true,
+      style_class: 'gnutt-popup-content'
+    });
+
+    // Create a custom menu item for the content
+    const menuItem = new PopupMenu.PopupBaseMenuItem({
+      reactive: false,
+      can_focus: false
+    });
+    menuItem.add_child(this._menuBox);
+    this._indicator.menu.addMenuItem(menuItem);
+  }
+
+  _updatePopupContent() {
+    if (!this._gmtData || !this._menuBox) return;
+    
+    // Clear existing content
+    this._menuBox.destroy_all_children();
+    
+    const { prevMidpoint, nextMidpoint } = this._gmtData;
+    
+    // Add title
+    const title = new St.Label({
+      text: 'GMT Day Information',
+      style_class: 'gnutt-popup-title',
+      x_expand: true
+    });
+    this._menuBox.add_child(title);
+    
+    // Add start time (0.0)
+    const startTimeLabel = new St.Label({
+      text: '0.0: ' + formatTimeInLocale(prevMidpoint),
+      style_class: 'gnutt-popup-line',
+      x_expand: true
+    });
+    this._menuBox.add_child(startTimeLabel);
+    
+    // Add separator
+    this._menuBox.add_child(new St.BoxLayout({
+      height: 1,
+      style_class: 'gnutt-popup-separator',
+      x_expand: true
+    }));
+    
+    // Add fraction times
+    const fractions = [
+      { label: '0.3', value: 1/3 },
+      { label: '0.5', value: 1/2 },
+      { label: '0.6', value: 2/3 }
+    ];
+    
+    for (const { label, value } of fractions) {
+      const time = getTimeAtFraction(prevMidpoint, nextMidpoint, value);
+      const fractionLabel = new St.Label({
+        text: label + ': ' + formatTimeInLocale(time),
+        style_class: 'gnutt-popup-line',
+        x_expand: true
+      });
+      this._menuBox.add_child(fractionLabel);
+    }
+    
+    // Add separator before end time
+    this._menuBox.add_child(new St.BoxLayout({
+      height: 1,
+      style_class: 'gnutt-popup-separator',
+      x_expand: true
+    }));
+    
+    // Add end time (1.0) at the bottom
+    const endTimeLabel = new St.Label({
+      text: '1.0: ' + formatTimeInLocale(nextMidpoint),
+      style_class: 'gnutt-popup-line',
+      x_expand: true
+    });
+    this._menuBox.add_child(endTimeLabel);
   }
 
   disable() {
@@ -179,6 +281,10 @@ export default class GnuttMetricTimeExtension extends Extension {
         });
         // Plain text - no markup
         this._label.text = res.formatted;
+        
+        // Update popup content
+        this._gmtData = res;
+        this._updatePopupContent();
       }
     } catch (e) {
       console.error('Gnutt update error:', e);

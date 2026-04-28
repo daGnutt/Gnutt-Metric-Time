@@ -4,3 +4,32 @@
   font-weight: bold;
   margin-right: 2px;
 }
+
+.gnutt-metric-time-popup {
+  background-color: rgba(0, 0, 0, 0.9);
+  border-radius: 8px;
+  padding: 10px;
+  color: white;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.gnutt-popup-content {
+  padding: 5px;
+  spacing: 8px;
+}
+
+.gnutt-popup-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+
+.gnutt-popup-line {
+  font-size: 0.9em;
+  padding: 2px 0;
+}
+
+.gnutt-popup-separator {
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 5px 0;
+}
