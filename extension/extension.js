@@ -192,7 +192,7 @@ export default class GnuttMetricTimeExtension extends Extension {
     
     // Add title
     const title = new St.Label({
-      text: 'GMT Day Information',
+      text: 'Gnutt Metric Time - Today',
       style_class: 'gnutt-popup-title',
       x_expand: true
     });
