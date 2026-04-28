@@ -135,6 +135,7 @@ function getTimeAtFraction(prevMidpoint, nextMidpoint, fraction) {
 export default class GnuttMetricTimeExtension extends Extension {
   enable() {
     this._loadSunCalc();
+    this._getSettings();
     this._indicator = new PanelMenu.Button(0.5, 'GnuttMetricTime');
     
     // Create label for the top bar
@@ -189,6 +190,7 @@ export default class GnuttMetricTimeExtension extends Extension {
     this._menuBox.destroy_all_children();
     
     const { prevMidpoint, nextMidpoint } = this._gmtData;
+    const displayFormat = this._settings ? this._settings.get_string('display-format') : 'fractions';
     
     // Add title
     const title = new St.Label({
@@ -205,21 +207,22 @@ export default class GnuttMetricTimeExtension extends Extension {
       x_expand: true
     }));
     
-    // Add fraction times: 0/6 through 6/6
+    // Add fraction times based on selected format
     const fractions = [
-      { label: '0/6', value: 0/6 },
-      { label: '1/6', value: 1/6 },
-      { label: '2/6', value: 2/6 },
-      { label: '3/6', value: 3/6 },
-      { label: '4/6', value: 4/6 },
-      { label: '5/6', value: 5/6 },
-      { label: '6/6', value: 6/6 }
+      { label: '0/6', value: 0/6, decimal: '0.000' },
+      { label: '1/6', value: 1/6, decimal: '0.167' },
+      { label: '2/6', value: 2/6, decimal: '0.333' },
+      { label: '3/6', value: 3/6, decimal: '0.500' },
+      { label: '4/6', value: 4/6, decimal: '0.667' },
+      { label: '5/6', value: 5/6, decimal: '0.833' },
+      { label: '6/6', value: 6/6, decimal: '1.000' }
     ];
     
-    for (const { label, value } of fractions) {
+    for (const { label, value, decimal } of fractions) {
       const time = getTimeAtFraction(prevMidpoint, nextMidpoint, value);
+      const displayLabel = displayFormat === 'decimals' ? decimal : label;
       const fractionLabel = new St.Label({
-        text: label + ': ' + formatTimeInLocale(time),
+        text: displayLabel + ': ' + formatTimeInLocale(time),
         style_class: 'gnutt-popup-line',
         x_expand: true
       });
@@ -232,10 +235,41 @@ export default class GnuttMetricTimeExtension extends Extension {
       GLib.source_remove(this._timeoutId);
       this._timeoutId = 0;
     }
+    if (this._settings) {
+      this._settings = null;
+    }
     if (this._indicator) {
       this._indicator.destroy();
       this._indicator = null;
     }
+  }
+
+  _getSettings() {
+    const schema = 'org.gnome.shell.extensions.gnutt-metric-time';
+    
+    // Try to get settings from default source first
+    const source = Gio.SettingsSchemaSource.get_default();
+    let gschema = source.lookup(schema, true);
+    
+    // If not found, try the extension's local schemas directory
+    if (!gschema) {
+      try {
+        const schemaDir = this.path + '/schemas';
+        const file = Gio.File.new_for_path(schemaDir);
+        const localSource = Gio.SettingsSchemaSource.new_from_directory(schemaDir, source, false);
+        gschema = localSource.lookup(schema, false);
+      } catch (e) {
+        console.warn(`Could not load schema from ${this.path}/schemas:`, e.message);
+      }
+    }
+    
+    if (!gschema) {
+      console.warn(`Schema ${schema} not found`);
+      this._settings = null;
+      return;
+    }
+    
+    this._settings = new Gio.Settings({ settings_schema: gschema });
   }
 
   _loadSunCalc() {

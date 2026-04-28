@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.gnutt-metric-time" path="/org/gnome/shell/extensions/gnutt-metric-time/" gettext-domain="gnutt-metric-time">
+    <key name="display-format" type="s">
+      <default>'fractions'</default>
+      <summary>Display format for popup times</summary>
+      <description>Choose between 'fractions' (0/6, 1/6, ...) or 'decimals' (0.000, 0.167, ...) format</description>
+    </key>
+  </schema>
+</schemalist>
