@@ -1,6 +1,6 @@
-.gnutt-metric-time-box {
-  color: #ffffff;
+.gnutt-metric-time-label {
   font-weight: bold;
   font-size: 14px;
-  padding: 0 8px;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
