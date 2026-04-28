@@ -1,18 +1,6 @@
-/* Minimal styles for Gnutt Metric Time extension */
-
-#gnutt-metric-time-label {
-  font-weight: 600;
+.gnutt-metric-time-box {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 0 8px;
 }
-
-/* Minimal styles for Gnutt Metric Time extension */
-
-#gnutt-metric-time-label {
-  font-weight: 600;
-}
-
-/* Minimal styles for Gnutt Metric Time extension */
-
-#gnutt-metric-time-label {
-  font-weight: 600;
-}
-

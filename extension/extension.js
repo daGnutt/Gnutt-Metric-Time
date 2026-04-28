@@ -120,16 +120,14 @@ export default class GnuttMetricTimeExtension extends Extension {
     this._loadSunCalc();
     this._indicator = new PanelMenu.Button(0.0, 'GnuttMetricTime');
     
-    // Try using Clutter.Text instead of St.Label
+    // Use St.BoxLayout with CSS styling for better control
     try {
-      this._label = new Clutter.Text({
-        text: 'GMT',
-        font_name: 'Sans Bold 14',
-        color: new Clutter.Color({ red: 255, green: 255, blue: 255, alpha: 255 })
-      });
-      this._indicator.add_child(this._label);
+      const box = new St.BoxLayout({ style_class: 'gnutt-metric-time-box' });
+      this._label = new Clutter.Text({ text: 'GMT' });
+      box.add_child(this._label);
+      this._indicator.add_child(box);
     } catch (e) {
-      console.log("Clutter.Text failed:", e.message);
+      console.log("Layout creation failed:", e.message);
     }
     
     Main.panel.addToStatusArea('gnutt-metric-time', this._indicator, 1, 'right');
