@@ -171,7 +171,8 @@ export default class GnuttMetricTimeExtension extends Extension {
           year0: new Date().getUTCFullYear(),
           precision: 3
         });
-        this._label.text = res.formatted;
+        // Use Pango markup for white color
+        this._label.text = `<span color="white">${res.formatted}</span>`;
       }
     } catch (e) {
       console.error('Gnutt update error:', e);
