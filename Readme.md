@@ -49,3 +49,48 @@ midpoint between the previous sunset/sunrise and the next midpoint
 between the next sunset/sunrise). Fractions can be expanded down to as
 low values as needed for correct time measurement, but for human scales
 rarely more than 3 decimals are needed.
+
+## Building and Deploying Locally
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm
+
+### Installation
+1. Clone the repository:
+```bash
+git clone git@github.com:daGnutt/Gnutt-Metric-Time.git
+cd Gnutt-Metric-Time
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+### Running Tests
+```bash
+npm test
+```
+
+### Deploying the GNOME Extension
+1. Build the extension package:
+```bash
+mkdir -p ~/.local/share/gnome-shell/extensions/gnutt-metric-time@local
+cp -r src extension/* ~/.local/share/gnome-shell/extensions/gnutt-metric-time@local/
+cp package.json ~/.local/share/gnome-shell/extensions/gnutt-metric-time@local/
+```
+
+2. Install dependencies in the extension directory:
+```bash
+cd ~/.local/share/gnome-shell/extensions/gnutt-metric-time@local
+npm install --production
+```
+
+3. Restart GNOME Shell:
+   - Press `Alt+F2`, type `r`, and press Enter, or
+   - Log out and log back in
+
+4. Enable the extension:
+   - Open GNOME Settings → Extensions
+   - Find "Gnutt Metric Time" and toggle it on
