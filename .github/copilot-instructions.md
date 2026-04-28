@@ -37,14 +37,8 @@ npm install --production
 ```
 
 ### Reload GNOME Shell (without logging out)
-After updating the extension, reload GNOME Shell to apply changes:
+After updating the extension, reload GNOME Shell to apply changes using dbus:
 
-**Option 1: Using keyboard shortcut (fastest)**
-- Press `Alt+F2` to open the Run Dialog
-- Type `r` (just the letter)
-- Press `Enter`
-
-**Option 2: Using dbus command**
 ```bash
 dbus-send --print-reply --session --dest=org.gnome.Shell /org/gnome/Shell org.gnome.Shell.Eval string:"global.reexec_self()"
 ```
