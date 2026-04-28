@@ -198,14 +198,6 @@ export default class GnuttMetricTimeExtension extends Extension {
     });
     this._menuBox.add_child(title);
     
-    // Add start time (0.0)
-    const startTimeLabel = new St.Label({
-      text: '0.0: ' + formatTimeInLocale(prevMidpoint),
-      style_class: 'gnutt-popup-line',
-      x_expand: true
-    });
-    this._menuBox.add_child(startTimeLabel);
-    
     // Add separator
     this._menuBox.add_child(new St.BoxLayout({
       height: 1,
@@ -213,11 +205,15 @@ export default class GnuttMetricTimeExtension extends Extension {
       x_expand: true
     }));
     
-    // Add fraction times
+    // Add fraction times: 0/6 through 6/6
     const fractions = [
-      { label: '0.3', value: 1/3 },
-      { label: '0.5', value: 1/2 },
-      { label: '0.6', value: 2/3 }
+      { label: '0/6', value: 0/6 },
+      { label: '1/6', value: 1/6 },
+      { label: '2/6', value: 2/6 },
+      { label: '3/6', value: 3/6 },
+      { label: '4/6', value: 4/6 },
+      { label: '5/6', value: 5/6 },
+      { label: '6/6', value: 6/6 }
     ];
     
     for (const { label, value } of fractions) {
@@ -229,21 +225,6 @@ export default class GnuttMetricTimeExtension extends Extension {
       });
       this._menuBox.add_child(fractionLabel);
     }
-    
-    // Add separator before end time
-    this._menuBox.add_child(new St.BoxLayout({
-      height: 1,
-      style_class: 'gnutt-popup-separator',
-      x_expand: true
-    }));
-    
-    // Add end time (1.0) at the bottom
-    const endTimeLabel = new St.Label({
-      text: '1.0: ' + formatTimeInLocale(nextMidpoint),
-      style_class: 'gnutt-popup-line',
-      x_expand: true
-    });
-    this._menuBox.add_child(endTimeLabel);
   }
 
   disable() {
