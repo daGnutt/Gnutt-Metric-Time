@@ -1,0 +1,14 @@
+{
+  "name": "gnutt-metric-time",
+  "version": "0.1.0",
+  "description": "Gnutt Metric Time GNOME Extension (scaffold)",
+  "main": "src/time.js",
+  "scripts": {
+    "test": "node test/time.spec.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "suncalc": "^1.9.0"
+  }
+}
+

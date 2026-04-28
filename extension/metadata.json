@@ -1,0 +1,7 @@
+{
+  "uuid": "gnutt-metric-time@gnutt",
+  "name": "Gnutt Metric Time",
+  "description": "Displays Gnutt Metric Time in the GNOME top bar",
+  "shell-version": ["42", "43", "44", "45", "46", "47", "48", "49", "50"],
+  "version": 3
+}
