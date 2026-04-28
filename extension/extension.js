@@ -124,7 +124,8 @@ export default class GnuttMetricTimeExtension extends Extension {
     try {
       this._label = new Clutter.Text({
         text: 'GMT',
-        font_name: 'Sans 12'
+        font_name: 'Sans Bold 14',
+        color: new Clutter.Color({ red: 255, green: 255, blue: 255, alpha: 255 })
       });
       this._indicator.add_child(this._label);
     } catch (e) {
@@ -133,7 +134,7 @@ export default class GnuttMetricTimeExtension extends Extension {
     
     Main.panel.addToStatusArea('gnutt-metric-time', this._indicator, 1, 'right');
     this._updateLabel();
-    this._timeoutId = GLib.timeout_add_seconds(1, () => {
+    this._timeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
       this._updateLabel();
       return GLib.SOURCE_CONTINUE;
     });
