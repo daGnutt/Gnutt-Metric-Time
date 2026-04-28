@@ -120,14 +120,20 @@ export default class GnuttMetricTimeExtension extends Extension {
     this._loadSunCalc();
     this._indicator = new PanelMenu.Button(0.0, 'GnuttMetricTime');
     
-    // Use St.BoxLayout with CSS styling for better control
+    // Create label following GNOME extension pattern
     try {
-      const box = new St.BoxLayout({ style_class: 'gnutt-metric-time-box' });
-      this._label = new Clutter.Text({ text: 'GMT' });
-      box.add_child(this._label);
-      this._indicator.add_child(box);
+      this._label = new St.Label({
+        text: 'GMT',
+        y_align: Clutter.ActorAlign.CENTER,
+        style_class: 'gnutt-metric-time-label'
+      });
+      // Configure clutter_text for proper rendering
+      this._label.clutter_text.set({
+        x_align: Clutter.ActorAlign.CENTER,
+      });
+      this._indicator.add_child(this._label);
     } catch (e) {
-      console.log("Layout creation failed:", e.message);
+      console.log("Label creation failed:", e.message);
     }
     
     Main.panel.addToStatusArea('gnutt-metric-time', this._indicator, 1, 'right');
